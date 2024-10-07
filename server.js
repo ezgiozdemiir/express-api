@@ -215,7 +215,7 @@ app.get("/products", (req, res) => {
 });
 
 //Get a product by ID
-app.get("/products/:id", (req, res) => {
+app.get("/products/id/:id", (req, res) => {
   const product = products.find((p) => p.id === parseInt(req.params.id));
   if (product) return;
   res.status(404).send("Product not found");
@@ -223,11 +223,15 @@ app.get("/products/:id", (req, res) => {
 });
 
 //Get procucts with type
-app.get("/products/:type", (req, res) => {
-  const product = products.find((p) => p.type === parseInt(req.params.type));
-  if (product) return;
-  res.status(404).send("Product type has not any item");
-  res.json(product);
+app.get("/products/type/:type", (req, res) => {
+  const productType = req.params.type;
+  const filteredProducts = products.filter((p) => p.type === productType);
+
+  if (filteredProducts.length === 0) {
+    return res.status(404).send("No products found for this type.");
+  }
+
+  res.json(filteredProducts);
 });
 
 app.listen(port, () => {
