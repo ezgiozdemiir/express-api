@@ -221,7 +221,6 @@ app.get("/products/id/:id", (req, res) => {
   res.status(404).send("Product not found");
   res.json(product);
 });
-
 //Get procucts with type
 app.get("/products/type/:type", (req, res) => {
   const productType = req.params.type;
