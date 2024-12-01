@@ -1,10 +1,27 @@
 const express = require("express");
 const app = express();
-const port = 3000;
+const authRoutes = require('./routes/auth');
+const protectedRoute = require('./routes/protectedRoute');
+const rateLimit = require("express-rate-limit");
+app.use('/auth', authRoutes);
+app.use('/protected', protectedRoute);
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+console.log(`Server is running on port ${PORT}`);
+});
 const cors = require("cors");
 app.use(cors());
 
 app.use(express.json());
+
+// Rate limiter for 15 min
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100, // Limit each 100 requests per window 15 min duration
+  message: "Too many requests from this IP, please try again later.",
+});
+
+app.use(limiter);
 
 let products = [
   {
@@ -210,8 +227,33 @@ let products = [
 ];
 
 //Get all product
+// app.get("/products", (req, res) => {
+//   res.json(products);
+// });
+
+//Get all products with pagination
 app.get("/products", (req, res) => {
-  res.json(products);
+  try {
+    const pageNumber = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+
+    if (pageNumber < 1 || limit < 1) {
+      return res.status(400).json({ error: "Invalid page or limit value" });
+    }
+
+    const startIndex = (pageNumber - 1) * limit;
+    const endIndex = pageNumber * limit;
+    const paginatedProducts = products.slice(startIndex, endIndex);
+
+    res.json({
+      currentPage: pageNumber,
+      totalProducts: products.length,
+      totalPages: Math.ceil(products.length / limit),
+      products: paginatedProducts,
+    });
+  } catch (error) {
+    res.status(500).json({ error: "Internal Server Error" });
+  }
 });
 
 //Get a product by ID
@@ -231,8 +273,4 @@ app.get("/products/type/:type", (req, res) => {
   }
 
   res.json(filteredProducts);
-});
-
-app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
 });
