@@ -1,5 +1,6 @@
 const express = require("express");
-const products = require("../controllers/products");
+const products = require("../data/products");
+const messages = require("../data/messages");
 
 const router = express.Router();
 
@@ -9,7 +10,7 @@ router.get("/", (req, res) => {
   const limit = parseInt(req.query.limit) || 10;
 
   if (pageNumber < 1 || limit < 1) {
-    return res.status(400).json({ error: "Invalid page or limit value" });
+    return res.status(400).json({ error: messages.products.INVALID_PAGE_OR_LIMIT });
   }
 
   const startIndex = (pageNumber - 1) * limit;
@@ -28,7 +29,7 @@ router.get("/", (req, res) => {
 router.get("/id/:id", (req, res) => {
   const product = products.find((p) => p.id === parseInt(req.params.id));
   if (!product) {
-    return res.status(404).send("Product not found");
+    return res.status(404).json({ error:messages.products.PRODUCT_NOT_FOUND});
   }
   res.json(product);
 });
@@ -39,7 +40,7 @@ router.get("/type/:type", (req, res) => {
   const filteredProducts = products.filter((p) => p.type === productType);
 
   if (filteredProducts.length === 0) {
-    return res.status(404).send("No products found for this type.");
+    return res.status(404).json( {error: messages.products.NO_PRODUCTS_FOR_TYPE });
   }
 
   res.json(filteredProducts);
