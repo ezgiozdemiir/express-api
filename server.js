@@ -4,7 +4,7 @@ const rateLimiter = require("./middleware/rateLimiter");
 const productRoutes = require("./routes/products");
 const authRoutes = require("./routes/auth");
 const protectedRoutes = require("./routes/protectedRoute");
-const messages = require("./data/messages");
+const messages = require("./controller/messages");
 const app = express();
 
 app.use(cors());
