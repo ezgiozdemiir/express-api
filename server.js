@@ -1,10 +1,10 @@
 const express = require("express");
 const cors = require("cors");
 const rateLimiter = require("./middleware/rateLimiter");
-const productRoutes = require("./routes/products");
+const productRoutes = require("./controller/products");
 const authRoutes = require("./routes/auth");
 const protectedRoutes = require("./routes/protectedRoute");
-const messages = require("./controller/messages");
+const messages = require("./data/messages");
 const app = express();
 
 app.use(cors());

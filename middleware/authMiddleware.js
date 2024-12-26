@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const messages = require("../controller/messages");
+const messages = require("../data/messages");
 
 function verifyToken(req, res, next) {
 const token = req.header('Authorization');
